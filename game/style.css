@@ -1,0 +1,230 @@
+/* Lanternfall page: a dark room around the canvas, nothing more.
+ * The wrap is as large as the viewport allows at the field's 16:10
+ * shape — on a big monitor it grows, on a phone in landscape it
+ * fills the screen — and in fullscreen the hint line steps aside. */
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  height: 100dvh;
+  background: #070a12;
+  color: #bcd2ff;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.wrap {
+  width: min(100vw, calc((100dvh - 48px) * 1.6));
+  padding: 8px;
+}
+
+/* Screenshot scenes (?shot=) pin the wrap so the captured frame keeps
+ * a fixed, rule-sized canvas no matter what display runs the tool. */
+body.shot-mode .wrap { width: 1280px; }
+
+:fullscreen .wrap {
+  width: min(100vw, calc(100dvh * 1.6));
+  padding: 0;
+}
+
+:fullscreen .hint { display: none; }
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #10182e;
+  border: 1px solid rgba(255, 196, 107, 0.35);
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+:fullscreen canvas { border: none; }
+
+.hint {
+  text-align: center;
+  font-size: 13px;
+  margin: 6px 0 0;
+  color: #7e93bd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A page cannot rotate the phone for the player, so in portrait on a
+ * touch device a small chip asks instead. It never blocks a tap. */
+.rotate-hint { display: none; }
+
+@media (orientation: portrait) and (pointer: coarse) {
+  .rotate-hint {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    pointer-events: none;
+    background: rgba(16, 24, 46, 0.9);
+    color: #ffe9b0;
+    border: 1px solid rgba(255, 196, 107, 0.45);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}
+
+.fs-btn {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  z-index: 5;
+  background: rgba(16, 24, 46, 0.88);
+  color: #ffe9b0;
+  border: 1px solid rgba(255, 196, 107, 0.45);
+  border-radius: 8px;
+  padding: 9px 13px;
+  font: 14px system-ui, sans-serif;
+  cursor: pointer;
+}
+
+/* Portrait controller pads: on a touch phone held upright, the field
+ * sits at the top and the dead space below becomes a gamepad — a move
+ * stick on the left, an aim-and-fire stick on the right, and the two
+ * stocked finds between them. main.js adds .pad-mode to the body when
+ * the viewport is portrait and the pointer is coarse; the pads are
+ * display:none everywhere else. */
+.pad { display: none; }
+
+body.pad-mode {
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+body.pad-mode .pad {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  min-height: 230px;
+  padding: 8px 14px 20px;
+  gap: 6px;
+}
+
+body.pad-mode .rotate-hint { display: none; }
+
+/* The fullscreen button parks at the bottom centre in pad mode: the
+ * top-right of the field belongs to the HP and lantern meters, and
+ * the space under the pads is otherwise empty. */
+body.pad-mode .fs-btn {
+  top: auto;
+  bottom: 14px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+.stick-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stick-base {
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 196, 107, 0.35);
+  background: radial-gradient(circle, rgba(27, 38, 68, 0.85), rgba(11, 16, 32, 0.92));
+  position: relative;
+  flex: none;
+}
+
+#stick-aim .stick-base { border-color: rgba(255, 122, 122, 0.4); }
+
+.stick-knob {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9b0, #d99a35);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -31px 0 0 -31px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+#stick-aim .stick-knob { background: radial-gradient(circle at 35% 30%, #ffd9d0, #d95f43); }
+
+.stick-label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #7e93bd;
+}
+
+.pad-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pad-btn {
+  background: rgba(16, 24, 46, 0.9);
+  color: #ffe9b0;
+  border: 1px solid rgba(255, 196, 107, 0.45);
+  border-radius: 10px;
+  padding: 13px 10px;
+  font: 14px system-ui, sans-serif;
+  min-width: 98px;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.pad-btn.off { opacity: 0.45; }
+
+/* Portrait field: when main.js stands the arena upright on a phone
+ * (body.field-portrait), the wrap sizes to the tall 800x1280 shape
+ * and leaves a shorter strip below for the pads, whose sticks shrink
+ * to fit it. The field then fills most of the phone's height instead
+ * of a third of it. */
+body.field-portrait .wrap {
+  width: min(100vw, calc((100dvh - 208px) * 0.625));
+}
+
+:fullscreen body.field-portrait .wrap {
+  width: min(100vw, calc(100dvh * 0.625));
+}
+
+body.field-portrait .pad {
+  min-height: 158px;
+  /* The bottom strip belongs to the centred fullscreen button, so
+   * the pad buttons ride above it instead of underneath it. */
+  padding: 6px 14px 54px;
+}
+
+body.field-portrait .stick-base {
+  width: 106px;
+  height: 106px;
+}
+
+body.field-portrait .stick-knob {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+}
+
+body.field-portrait .stick-zone { gap: 7px; }

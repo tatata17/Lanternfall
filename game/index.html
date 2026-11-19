@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Lanternfall — Keep the Light Alive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <canvas id="game" width="1280" height="800"></canvas>
+  <p class="hint" id="hint">WASD / arrows to move · mouse to aim · hold click or Space to fire · P pause · M mute · F fullscreen · Touch: thumbs on the field, or the pads below in portrait</p>
+</main>
+<div id="pad" class="pad">
+  <div class="stick-zone" id="stick-move">
+    <div class="stick-base"><div class="stick-knob"></div></div>
+    <span class="stick-label">MOVE</span>
+  </div>
+  <div class="pad-center">
+    <button id="pad-heal" class="pad-btn" type="button">🧪 Heal <span id="pad-heal-count">×0</span></button>
+    <button id="pad-bomb" class="pad-btn" type="button">✹ Bomb <span id="pad-bomb-count">×0</span></button>
+  </div>
+  <div class="stick-zone" id="stick-aim">
+    <div class="stick-base"><div class="stick-knob"></div></div>
+    <span class="stick-label">AIM + FIRE</span>
+  </div>
+</div>
+<div class="rotate-hint">⟳ Rotate your phone — landscape plays bigger</div>
+<button id="fs" class="fs-btn" type="button">⛶ Fullscreen</button>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
